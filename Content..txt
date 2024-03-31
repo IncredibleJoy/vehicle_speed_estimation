@@ -37,4 +37,36 @@ for epoch in range(1, num_epoch+1):
     save_and_plot_output_scores(model, training_set, 'Training Set Output Scores', epoch)
 
     # Plot and save output scores for testing set
-    save_and_plot_output_scores(model, testing_set, 'Testing Set Output Scores', epoch)
+    save_and_plot_output_scores(model, testing_set, 'Testing Set Output Scores', epoch
+
+import os
+
+def evaluate_new_record(model_path, record_file):
+    # Construct the model file path using os.path.join
+    model_file = os.path.join(model_path, 'model.pth')
+
+    # Load the model
+    model = PredicterRNN(state_dim, hidden_dim, output_size,
+                         states_per_sequence, num_lstm_layers)
+    model.load_state_dict(torch.load(model_file))
+    model.eval()
+
+    # Load the new record.pickle file
+    with open(record_file, 'rb') as f:
+        new_record = pickle.load(f)
+
+    # Prepare sequence and evaluate
+    for state_sequence, tag in new_record:
+        sentence_in, label = prepare_sequence(state_sequence, tag)
+        output_scores = model(sentence_in)
+        _, predicted_label = output_scores[-1].max(0)
+        print("Predicted Label:", predicted_label.item())
+
+# Specify the directory containing the model file
+model_directory = 'Model'
+
+# Specify the path to the new record file
+new_record_file = 'record.pickle'
+
+# Evaluate the new record file
+evaluate_new_record(model_directory, new_record_file)
