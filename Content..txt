@@ -1,0 +1,40 @@
+import matplotlib.pyplot as plt
+import os
+
+# Create a directory to save plots if it doesn't exist
+plot_dir = 'output_plots'
+if not os.path.exists(plot_dir):
+    os.makedirs(plot_dir)
+
+# Define a function to save and plot output scores
+def save_and_plot_output_scores(model, dataset, title, epoch):
+    output_scores_list = []
+    labels_list = []
+    with torch.no_grad():
+        for state_sequence, tag in dataset:
+            sentence_in, label = prepare_sequence(state_sequence, tag)
+            output_scores = model(sentence_in)
+            output_scores_list.append(output_scores.numpy())
+            labels_list.append(tag)
+    
+    output_scores_array = np.concatenate(output_scores_list)
+    plt.figure(figsize=(10, 6))
+    plt.plot(output_scores_array[:, 0], label='Output Score for Class 0', alpha=0.5)
+    plt.plot(output_scores_array[:, 1], label='Output Score for Class 1', alpha=0.5)
+    plt.plot(output_scores_array[:, 2], label='Output Score for Class 2', alpha=0.5)
+    plt.xlabel('Sample Index')
+    plt.ylabel('Output Score')
+    plt.title(title)
+    plt.legend()
+    plt.savefig(os.path.join(plot_dir, f'epoch_{epoch}_output_scores.png'))  # Save plot
+    plt.close()  # Close the plot to free memory
+
+# Inside your training loop
+for epoch in range(1, num_epoch+1):
+    # Previous code for training and evaluation
+    
+    # Plot and save output scores for training set
+    save_and_plot_output_scores(model, training_set, 'Training Set Output Scores', epoch)
+
+    # Plot and save output scores for testing set
+    save_and_plot_output_scores(model, testing_set, 'Testing Set Output Scores', epoch)
