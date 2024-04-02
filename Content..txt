@@ -70,3 +70,36 @@ new_record_file = 'record.pickle'
 
 # Evaluate the new record file
 evaluate_new_record(model_directory, new_record_file)
+
+
+import pandas as pd
+import plotly.graph_objects as go
+
+# Example DataFrame
+data = {
+    'id': [1, 1, 1, 2, 2, 2],
+    'frame': [1, 2, 3, 1, 2, 3],
+    'x': [1, 2, 3, 4, 5, 6],
+    'y': [2, 3, 4, 5, 6, 7],
+    'label': ['A', 'A', 'B', 'B', 'C', 'C'],
+    'pred': ['X', 'X', 'Y', 'Y', 'Z', 'Z']
+}
+
+df = pd.DataFrame(data)
+
+# Group data by 'id'
+grouped = df.groupby('id')
+
+# Plot each group separately
+for name, group in grouped:
+    fig = go.Figure()
+    for _, row in group.iterrows():
+        fig.add_trace(
+            go.Scatter(x=[row['x']], y=[row['y']],
+                       mode='markers',
+                       marker=dict(color=row['label'] + row['pred'], size=10),
+                       name=f"Frame {row['frame']}"))
+    fig.update_layout(title=f"Plot for ID {name}",
+                      xaxis_title="X",
+                      yaxis_title="Y")
+    fig.show()
