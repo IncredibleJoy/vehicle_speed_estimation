@@ -118,3 +118,41 @@ for name, group in grouped:
     plt.ylabel("Y")
     plt.legend()
     plt.show()
+////////////////////////////////////////////
+import pandas as pd
+import plotly.graph_objects as go
+
+# Example DataFrame
+data = {
+    'id': [1, 1, 1, 2, 2, 2],
+    'frame': [1, 2, 3, 1, 2, 3],
+    'x': [1, 2, 3, 4, 5, 6],
+    'y': [2, 3, 4, 5, 6, 7],
+    'label': ['A', 'A', 'B', 'B', 'C', 'C'],
+    'pred': ['A', 'A', 'B', 'A', 'A', 'A']
+}
+
+df = pd.DataFrame(data)
+
+# Create a color mapping for labels
+color_map = {'A': 'rgb(255, 0, 0)',  # Red
+             'B': 'rgb(0, 255, 0)',  # Green
+             'C': 'rgb(0, 0, 255)'}  # Blue
+
+# Group data by 'id'
+grouped = df.groupby('id')
+
+# Plot each group separately
+for name, group in grouped:
+    fig = go.Figure()
+    for _, row in group.iterrows():
+        label_color = color_map.get(row['label'], 'rgb(0, 0, 0)')  # Default to black if label not found
+        fig.add_trace(
+            go.Scatter(x=[row['x']], y=[row['y']],
+                       mode='markers',
+                       marker=dict(color=label_color, size=10),
+                       name=f"Frame {row['frame']}"))
+    fig.update_layout(title=f"Plot for ID {name}",
+                      xaxis_title="X",
+                      yaxis_title="Y")
+    fig.show()
