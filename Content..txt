@@ -103,3 +103,18 @@ for name, group in grouped:
                       xaxis_title="X",
                       yaxis_title="Y")
     fig.show()
+df = pd.DataFrame(data)
+
+# Group data by 'id'
+grouped = df.groupby('id')
+
+# Plot each group separately
+for name, group in grouped:
+    plt.figure()
+    for _, row in group.iterrows():
+        plt.scatter(row['x'], row['y'], label=f"Frame {row['frame']}", color=row['label'] + row['pred'], s=100)
+    plt.title(f"Plot for ID {name}")
+    plt.xlabel("X")
+    plt.ylabel("Y")
+    plt.legend()
+    plt.show()
